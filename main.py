@@ -41,7 +41,7 @@ while run:
     poo_time = int(input("ถ่ายมาแล้วกี่ครั้ง : "))
     Serial = int(input())
     Send = input("อนุมัติโดยระบบ/อนุมัติเรียบร้อย : ").strip()
-    Time = input("time AM/PM").strip()
+    Time = input("time AM/PM 09:30 AM :").strip()
     date = input("Date dd/mm/yyyy 03/05/2566 : ").strip()
 
     data = {
