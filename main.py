@@ -1,71 +1,175 @@
-import pandas
-import csv
 from pymongo import MongoClient
 import random
 
-mongo_str = "mongodb+srv://hdrproject:50230@cluster0.ktm1unb.mongodb.net/?retryWrites=true&w=majority"
+IDPASS = "" #hdrproject:50230
+mongo_str = f"mongodb+srv://{IDPASS}@cluster0.ktm1unb.mongodb.net/?retryWrites=true&w=majority"
 client = MongoClient(mongo_str)
 
 db = client.HDRProjecct
-datas = db.historiess
+datas = db.studentdatas
+insertdatas = db.historiess
 
-box_code = []
-
-ran_str = ''
-for i in range(100):
-    for n in range(5):
-        ran_num = random.randint(0,9)
-        ran_str += str(ran_num)
-    box_code.append(ran_str)
-    ran_str = ''
+Symptom_box = ["ปวดหัว", "มีไข้", "ท้องเสีย", "ปวดประจำเดือน", "ลมพิษ"]
 
 
-print(box_code)
-run = True
-while run:
-    StudentNumber = int(input("12345 : "))
-    if StudentNumber == 0:
-        print("end")
-        break
-    StudentName = input("Name : ").strip()
-    Room = int(input("Room 601 : "))
-    Number = int(input("Number 1 2 3 16 : "))
-    Symptom = input("ปวดหัว มีไข้ ท้องเสีย ปวดประจำเดือน ลมพิษ/แพ้ : ") .strip()
-    Age = int(input("Age"))
-    Weight = float(input("weight"))
-    Cause = input("อาการที่พบ : ").strip()
-    Range = int(input("ระดับความปวด"))
-    Temp = float(input("Temp : "))
-    Date_poo = input("Date poo dd/mm/yyyy 03/05/2566 : ").strip()
-    time_poo = input("Time poo dd/mm/yyyy 03/05/2566 : ").strip()
-    poo_time = int(input("ถ่ายมาแล้วกี่ครั้ง : "))
-    Serial = int(input())
-    SendStatus = bool(input("SendStatus True : "))
-    Sendby = input("อนุมัติโดยระบบ/อนุมัติโดยครู : ").strip()
-    Time = input("time AM/PM 09:30 AM :").strip()
-    date = input("Date dd/mm/yyyy 03/05/2566 : ").strip()
+def up_to_db(data):
+    print("Update data to DataBase Wait a Second...")
+    insertdatas.insert_one(data)
+    print("Done")
 
-    data = {
-        "StudentNumber":StudentNumber,
-        "StudentName":StudentName,
-        "Room":Room,
-        "Number":Number,
-        "Symptom":Symptom,
-        "Age":Age,
-        "Weight":Weight,
-        "Cause":Cause,
-        "Range":Range,
-        "Temp":Temp,
-        "Date_poo":Date_poo,
-        "time_poo":time_poo,
-        "poo_time":poo_time,
-        "Detail":{
-            "Serial":Serial,
-            "SendStatus":SendStatus,
-            "Sendby":Sendby,
-            "Time":Time,
-            "date":date
-        }
+
+def gen_serial():
+    ran_box = ''
+    for i in range(5):
+        ran_box += str(random.randint(0,9))
+    return ran_box
+
+
+def detail(Sendby):
+    Detail = {
+    "Serial":int(gen_serial()),
+        "SendStatus":True,
+        "Sendby":Sendby,
+        "Time":Time,
+        "date":Date
     }
+    return Detail
 
-    datas.insert_one(data)
+
+def headmen(Symptom):
+    headmen = {
+    "StudentNumber":Student_Number,
+    "StudentName":student_data_name,
+    "Room":int(student_data_room),
+    "Number":int(student_data_number),
+    "Symptom":Symptom,
+    "Age":int(Age),
+    "Weight":float(Weight),
+    "Cause":Cause,
+    "Range":int(Range),
+    }
+    return headmen
+
+
+def urticaria(Symptom):
+    urticaria = {
+    "StudentNumber":Student_Number,
+    "StudentName":student_data_name,
+    "Room":int(student_data_room),
+    "Number":int(student_data_number),
+    "Symptom":Symptom,
+    "Age":int(Age),
+    "Weight":float(Weight),
+    "Cause":Cause,
+    }
+    return urticaria
+
+
+def fever(Symptom):
+    fever = {
+    "StudentNumber":Student_Number,
+    "StudentName":student_data_name,
+    "Room":int(student_data_room),
+    "Number":int(student_data_number),
+    "Symptom":Symptom,
+    "Age":int(Age),
+    "Weight":float(Weight),
+    "Cause":Cause,
+    "Temp":float(Temp),
+    }
+    return fever
+
+
+def diarrhea(Symptom):
+    diarrhea = {
+    "StudentNumber":Student_Number,
+    "StudentName":student_data_name,
+    "Room":int(student_data_room),
+    "Number":int(student_data_number),
+    "Symptom":Symptom,
+    "Age":int(Age),
+    "Weight":float(Weight),
+    "Date_poo":Date_poo,
+    "Time_poo":Time_poo,
+    "Poo_Time":Poo_time,
+    }
+    return diarrhea
+
+
+try:
+    print("\n=============================")
+    print("\nStart The Program!")
+    while True:
+
+        Student_Number = int(input("StudentNumber is : "))
+        print("Searching for StudentName by StudentNumber, pls wait a second...")
+        student_data_name = datas.find_one({"StudentNumber":Student_Number})["StudentName"]
+        student_data_room = datas.find_one({"StudentNumber":Student_Number})["Room"]
+        student_data_number = datas.find_one({"StudentNumber":Student_Number})["Number"]
+
+        Symptom = int(input("1.ปวดหัว 2.มีไข้ 3.ท้องเสีย 4.ปวดประจำเดือน 5.ลมพิษ/แพ้ : "))
+        Age = int(input("Age is : "))
+        Weight = float(input("Weight is : "))
+        Date = input("Date is : ")
+        Time = input("Time is : ")
+
+
+        if Symptom == 1:
+            print(f"Symptom is : '{Symptom_box[Symptom-1]}' "),
+            Cause = input("Cause is : ")
+            Range = int(input("Range is : "))
+            Sendby = "อนุมัติโดยครู"
+            data = headmen(Symptom_box[Symptom-1])
+            data.update({"Detail":detail(Sendby)})
+            up_to_db(data)
+
+        elif Symptom == 2:
+            print(f"Symptom is : '{Symptom_box[Symptom-1]}' "),
+            Cause = input("Cause is : ")
+            Temp = float(input("Temp is : "))
+            if Temp >= 38:
+                Sendby = "อนุมัติโดยระบบ"
+            else:
+                Sendby = "อนุมัติโดยครู"
+            data = fever(Symptom_box[Symptom-1])
+            data.update({"Detail":detail(Sendby)})
+            up_to_db(data)
+
+        elif Symptom == 3:
+            print(f"Symptom is : '{Symptom_box[Symptom-1]}' "),
+            Date_poo = input("Date_poo is : ")
+            Time_poo = input("Time_poo is : ")
+            Poo_time = int(input("Poo_time is : "))
+            Sendby = "อนุมัติโดยครู"
+            data = diarrhea(Symptom_box[Symptom-1])
+            data.update({"Detail":detail(Sendby)})
+            up_to_db(data)
+
+        elif Symptom == 4:
+            print(f"Symptom is : '{Symptom_box[Symptom-1]}' "),
+            Cause = input("Cause is : ")
+            Range = int(input("Range is : "))
+            Sendby = "อนุมัติโดยครู"
+            data = headmen(Symptom_box[Symptom-1])
+            data.update({"Detail":detail(Sendby)})
+            up_to_db(data)
+
+        elif Symptom == 5:
+            print(f"Symptom is : '{Symptom_box[Symptom-1]}' "),
+            Cause = input("Cause is : ")
+            Sendby = "อนุมัติโดยครู"
+            data = urticaria(Symptom_box[Symptom-1])
+            data.update({"Detail":detail(Sendby)})
+            up_to_db(data)
+
+
+except KeyboardInterrupt as k:
+    print("\n=============================")
+    print(f"\n[System] : See You Next Time")
+    print("\n=============================")
+
+
+except Exception as e:
+    print("\n============Error============")
+    print(f"\nerror is : {e}")
+    print("\n=============================")
