@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 import random
 
-IDPASS = "" #hdrproject:50230
+IDPASS = "" 
 mongo_str = f"mongodb+srv://{IDPASS}@cluster0.ktm1unb.mongodb.net/?retryWrites=true&w=majority"
 client = MongoClient(mongo_str)
 
